@@ -3,6 +3,7 @@ import numpy as np
 from math import log
 from reaction import reaction
 import numba
+import pathos
 
 @numba.njit
 def fast_sum(propensities):
@@ -18,9 +19,21 @@ def draw(probabilities, r2):
     j -= 1
     return j
 
-def simulate(start_state: list[int], end_time: float, reactions: list[reaction]) -> list[tuple[float, int]]:
+def simulate_wrapper(args):
+    return simulate_run(*args)
+
+def simulate(start_state: list[int], end_time: float, reactions: list[reaction], n_repeats: int, n_threads: int):
+
+    with pathos.multiprocessing.Pool(n_threads) as pool:
+        arguments = [(start_state, end_time, reactions, i) for i in range(n_repeats)]
+        results = pool.map(simulate_wrapper, arguments)
+
+    return results
+
+def simulate_run(start_state: list[int], end_time: float, reactions: list[reaction], seed: int) -> list[tuple[float, int]]:
     
     # Initialize. Set the initial number of molecules for each species and set t = 0.
+    np.random.seed(seed)
     r_MAX = 101
     t = 0.0
     #initial_state = start_state.copy()
@@ -28,9 +41,6 @@ def simulate(start_state: list[int], end_time: float, reactions: list[reaction])
     state = start_state.copy()
     propensities = np.array([0.] * len(reactions))
     probabilities = np.array([0.] * len(reactions))
-    r1_lst = np.random.rand(r_MAX)
-    r2_lst = np.random.rand(r_MAX)
-    r_idx = 0
 
     while t < end_time:
         # Calculate the propensity function, a_k, for each reaction.
@@ -46,13 +56,8 @@ def simulate(start_state: list[int], end_time: float, reactions: list[reaction])
         probabilities = propensities / A
 
         # Generate two independent uniform (0,1) random numbers r_1 and r_2.
-        if r_idx >= r_MAX:
-            r1_lst = np.random.rand(r_MAX)
-            r2_lst = np.random.rand(r_MAX)
-            r_idx = 0
-        r1 = r1_lst[r_idx]
-        r2 = r2_lst[r_idx]
-        r_idx += 1
+        r1 = np.random.rand()
+        r2 = np.random.rand() 
 
         # Set delta = 1 / A * ln( 1 / r1)
         delta = (1 / A) * log(1 / r1)
