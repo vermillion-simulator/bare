@@ -4,30 +4,28 @@ from math import log
 from typing import Callable
 
 class reaction():
-
     def __init__(self, update: list[int], propensity: Callable[[list[int]], float]):
-        self.update = update
+        self.update = np.array(update)
         self.prop_func = propensity 
 
     def propensity(self, state: list[int]) -> float:
         return self.prop_func(state)
 
 
-
-def simulate(start_state: list[int], end_time: float, reactions: list[reaction]) -> None:
+def simulate(start_state: list[int], end_time: float, reactions: list[reaction]) -> list[tuple[float, int]]:
     
     # Initialize. Set the initial number of molecules for each species and set t = 0.
     t = 0.0
     # initial_state = start_state.copy()
+    results: list[tuple[float,int]] = []
     state = start_state.copy()
     propensities = np.array([0.] * len(reactions))
     probabilities = np.array([0.] * len(reactions))
 
-
     while t < end_time:
         # Calculate the propensity function, a_k, for each reaction.
         for idx, r in enumerate(reactions):
-            propensities[idx] = r.prop_func
+            propensities[idx] = r.prop_func(state)
 
         # Set A = sum_{k=1}^{M} a_k
         A = np.sum(propensities)
@@ -54,6 +52,6 @@ def simulate(start_state: list[int], end_time: float, reactions: list[reaction])
         # Set t = t + delta and update the number of each molecular species according to reaction mu.
         state += reactions[j].update
         t += delta
-        print(f"Time: {t} \t State: {state}")
+        results.append((t, j))
         # Return to step 2 or quit.
-    return
+    return results
