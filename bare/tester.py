@@ -1,14 +1,15 @@
+from venv import create
+from reaction import *
 from direct import *
 from reconstruct import *
 
 def main():
-    f: Callable[[list[int]], float] = lambda x: x[0] * 1.0
-    a = reaction(update = [-1], propensity = f)
-    simulate([100], 10.0, [a], 1000, 8)
-    # results = simulate([100], 10.0, [a], 2, 2)
-    # print(results[0])
-    # print('------------')
-    # print(results[1])
+    reactions = ["a -> b, 1.0"]
+    quantity = {"a": 100, "b": 0}
+    reactions, initial_state = create_model(reactions, quantity)
+    results = simulate_run(initial_state, 10.0, reactions, 0)
+    results = reconstruct(results, reactions, initial_state)
+    print(results)
     return
 
 if __name__ == "__main__":
