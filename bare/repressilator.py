@@ -33,15 +33,18 @@ def main():
     reactions[0].prop_func = lambda x: 0.5 if x[8] == 0 else 0.0005
     reactions[1].prop_func = lambda x: 0.5 if x[6] == 0 else 0.0005
     reactions[2].prop_func = lambda x: 0.5 if x[7] == 0 else 0.0005
+    reactions[3].update = np.array([0,0,0,1,0,0,0,0,0])
+    reactions[4].update = np.array([0,0,0,0,1,0,0,0,0])
+    reactions[5].update = np.array([0,0,0,0,0,1,0,0,0])
     reactions[15].prop_func = lambda x: 1 * x[5] * (x[8] < 2)
     reactions[16].prop_func = lambda x: 1 * x[3] * (x[6] < 2)
     reactions[17].prop_func = lambda x: 1 * x[4] * (x[7] < 2)
     reactions[18].prop_func = lambda x: 224.0 * (x[8] == 1) + 2 * 9 * (x[8] == 2) 
     reactions[19].prop_func = lambda x: 224.0 * (x[6] == 1) + 2 * 9 * (x[6] == 2) 
     reactions[20].prop_func = lambda x: 224.0 * (x[7] == 1) + 2 * 9 * (x[7] == 2)
-    results = simulate_run(initial_state, 30000.0, reactions, 0)
+    results = simulate_run(initial_state, 60000.0, reactions, 5)
     results = reconstruct(results, reactions, initial_state, mapping, ["p1", "p2", "p3"])
-    results.to_csv("repressilator_results.csv")
+    # results.to_csv("repressilator_results_1000.csv")
     plt.figure()
     results.plot(x="time", y=["p1", "p2", "p3"])
     plt.savefig("test.png")
