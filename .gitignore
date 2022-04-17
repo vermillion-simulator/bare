@@ -1,6 +1,9 @@
 # Profiles
 *.prof
 
+# Testing
+*.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
