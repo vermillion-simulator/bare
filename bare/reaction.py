@@ -50,7 +50,7 @@ def convert_reaction(r: Tuple[list[str], list[str], float], mapping: dict[str, i
             state[i] += 1   
 
     # Zero order reaction
-    if "None" in reac or "None" in prod:
+    if len(reac) == 0:
         return reaction(state, lambda x: rate)
 
     # First order reaction
@@ -67,6 +67,8 @@ def convert_reaction(r: Tuple[list[str], list[str], float], mapping: dict[str, i
         else:
             i: int = mapping[reac[0]]
             return reaction(state, lambda x: x[i] * (x[i] - 1)/2 * rate)
+
+    print(f"Reactants: {reac} and products {prod} and state {state}")
 
 def create_model(reactions: list[str], quantity: dict[str, int]):
     reactions = list(map(split_reaction, reactions))  # type: ignore

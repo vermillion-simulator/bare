@@ -4,6 +4,7 @@ from math import log
 from reaction import reaction
 import numba
 import pathos
+from tqdm import tqdm
 
 @numba.njit
 def fast_sum(propensities):
@@ -42,7 +43,16 @@ def simulate_run(start_state: list[int], end_time: float, reactions: list[reacti
     propensities = np.array([0.] * len(reactions))
     probabilities = np.array([0.] * len(reactions))
 
+    pbar = tqdm(total=100)
+    chunks = np.linspace(0, end_time, 21)
+    chunk_idx = 0
+
     while t < end_time:
+
+        if t > chunks[chunk_idx]:
+            pbar.update(5)
+            chunk_idx += 1
+
         # Calculate the propensity function, a_k, for each reaction.
         for idx, r in enumerate(reactions):
             propensities[idx] = r.prop_func(state)
@@ -70,5 +80,5 @@ def simulate_run(start_state: list[int], end_time: float, reactions: list[reacti
         t += delta
         results.append((t, j))
         # Return to step 2 or quit.
-    #df = reconstruct(results, reactions, initial_state)
+    pbar.close()
     return results
