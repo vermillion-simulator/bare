@@ -77,4 +77,4 @@ def create_model(reactions: list[str], quantity: dict[str, int]):
     state = np.array([0] * len(reactant_map))
     for item in quantity.keys():
         state[reactant_map[item]] = quantity[item]
-    return reactions, state
+    return reactions, state, reactant_map
