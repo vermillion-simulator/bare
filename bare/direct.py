@@ -6,24 +6,34 @@ import numba
 import pathos
 from tqdm import tqdm
 
+
 @numba.njit
 def fast_sum(propensities):
     return np.sum(propensities)
 
+
 @numba.njit
 def draw(probabilities, r2):
     j = 0
-    p_sum = 0.
+    p_sum = 0.0
     while p_sum < r2:
         p_sum += probabilities[j]
         j += 1
     j -= 1
     return j
 
+
 def simulate_wrapper(args):
     return simulate_run(*args)
 
-def simulate(start_state: list[int], end_time: float, reactions: list[reaction], n_repeats: int, n_threads: int):
+
+def simulate(
+    start_state: list[int],
+    end_time: float,
+    reactions: list[reaction],
+    n_repeats: int,
+    n_threads: int,
+):
 
     with pathos.multiprocessing.Pool(n_threads) as pool:
         arguments = [(start_state, end_time, reactions, i) for i in range(n_repeats)]
@@ -31,17 +41,19 @@ def simulate(start_state: list[int], end_time: float, reactions: list[reaction],
 
     return results
 
-def simulate_run(start_state: list[int], end_time: float, reactions: list[reaction], seed: int) -> list[tuple[float, int]]:
-    
+
+def simulate_run(
+    start_state: list[int], end_time: float, reactions: list[reaction], seed: int
+) -> list[tuple[float, int]]:
+
     # Initialize. Set the initial number of molecules for each species and set t = 0.
     np.random.seed(seed)
-    r_MAX = 101
     t = 0.0
-    #initial_state = start_state.copy()
-    results: list[tuple[float,int]] = []
+    # initial_state = start_state.copy()
+    results: list[tuple[float, int]] = []
     state = start_state.copy()
-    propensities = np.array([0.] * len(reactions))
-    probabilities = np.array([0.] * len(reactions))
+    propensities = np.array([0.0] * len(reactions))
+    probabilities = np.array([0.0] * len(reactions))
 
     pbar = tqdm(total=100)
     chunks = np.linspace(0, end_time, 21)
@@ -67,7 +79,7 @@ def simulate_run(start_state: list[int], end_time: float, reactions: list[reacti
 
         # Generate two independent uniform (0,1) random numbers r_1 and r_2.
         r1 = np.random.rand()
-        r2 = np.random.rand() 
+        r2 = np.random.rand()
 
         # Set delta = 1 / A * ln( 1 / r1)
         delta = (1 / A) * log(1 / r1)
