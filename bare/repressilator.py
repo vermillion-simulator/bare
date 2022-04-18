@@ -1,5 +1,6 @@
 from reaction import *
 import direct
+import modified_next_reaction
 import next_reaction
 from reconstruct import *
 import matplotlib.pyplot as plt
@@ -54,7 +55,7 @@ def main():
     reactions[18].prop_func = lambda x: 224.0 * (x[8] == 1) + 2 * 9 * (x[8] == 2)
     reactions[19].prop_func = lambda x: 224.0 * (x[6] == 1) + 2 * 9 * (x[6] == 2)
     reactions[20].prop_func = lambda x: 224.0 * (x[7] == 1) + 2 * 9 * (x[7] == 2)
-    results = next_reaction.simulate_run(initial_state, 30000.0, reactions, 5)
+    results = modified_next_reaction.simulate_run(initial_state, 15000.0, reactions, 5)
     results = reconstruct(
         results, reactions, initial_state, mapping, ["p1", "p2", "p3"]
     )
