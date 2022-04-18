@@ -42,7 +42,7 @@ def main():
     reactions[18].prop_func = lambda x: 224.0 * (x[8] == 1) + 2 * 9 * (x[8] == 2) 
     reactions[19].prop_func = lambda x: 224.0 * (x[6] == 1) + 2 * 9 * (x[6] == 2) 
     reactions[20].prop_func = lambda x: 224.0 * (x[7] == 1) + 2 * 9 * (x[7] == 2)
-    results = simulate_run(initial_state, 60000.0, reactions, 5)
+    results = simulate_run(initial_state, 6000.0, reactions, 5)
     results = reconstruct(results, reactions, initial_state, mapping, ["p1", "p2", "p3"])
     # results.to_csv("repressilator_results_1000.csv")
     plt.figure()
