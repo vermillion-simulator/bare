@@ -4,6 +4,7 @@ import modified_next_reaction
 import next_reaction
 from reconstruct import *
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def main():
@@ -55,14 +56,20 @@ def main():
     reactions[18].prop_func = lambda x: 224.0 * (x[8] == 1) + 2 * 9 * (x[8] == 2)
     reactions[19].prop_func = lambda x: 224.0 * (x[6] == 1) + 2 * 9 * (x[6] == 2)
     reactions[20].prop_func = lambda x: 224.0 * (x[7] == 1) + 2 * 9 * (x[7] == 2)
-    results = modified_next_reaction.simulate_run(initial_state, 15000.0, reactions, 5)
+    results = modified_next_reaction.simulate_run(initial_state, 60000.0, reactions, 5)
     results = reconstruct(
         results, reactions, initial_state, mapping, ["p1", "p2", "p3"]
     )
+    results["time"] = results["time"].div(60)
     # results.to_csv("repressilator_results_1000.csv")
-    plt.figure()
-    results.plot(x="time", y=["p1", "p2", "p3"])
-    plt.savefig("test.png")
+    sns.set_style("ticks")
+    plt.figure(figsize=(10, 10))
+    results.plot(x="time", y=["p1", "p2", "p3"], linewidth=0.8, legend=False)
+    plt.xlabel("Time (min)", fontsize=17)
+    plt.ylabel("Proteins per cell", fontsize=17)
+    plt.yticks([2000, 4000, 6000], fontsize=13)
+    plt.xticks([0, 500, 1000], fontsize=13)
+    plt.savefig("test.png", dpi=550)
     return
 
 
